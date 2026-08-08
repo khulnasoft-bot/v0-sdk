@@ -4,13 +4,19 @@ import type { Chat } from '@v0-sdk/react'
 import { useChats, useChatsInfinite } from '@v0-sdk/react/swr'
 import { Suspense, use, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { ChatItem } from '@/components/layout/chat-item'
 import { ApiKeyDialog } from '@/components/layout/api-key-dialog'
 import type { getSidebarChats } from '@/lib/sidebar-chats'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon, ChevronRightIcon, SidebarToggleIcon } from '@/lib/icons'
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  SettingsIcon,
+  SidebarToggleIcon,
+} from '@/lib/icons'
 
 type SidebarProps = {
   open: boolean
@@ -101,6 +107,13 @@ function SidebarSkeleton({
 
           <div className="flex-1" />
           <ApiKeyDialog {...apiKeyStatus} />
+          <Link
+            className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            href="/settings/general"
+          >
+            <SettingsIcon className="size-4" />
+            <span className="flex-1 text-left">Settings</span>
+          </Link>
         </div>
       ) : null}
     </aside>
@@ -258,6 +271,13 @@ function SidebarContent({ open, apiKeyStatus, onToggle, sidebarChats }: SidebarP
 
           <div className="flex-1" />
           <ApiKeyDialog {...apiKeyStatus} />
+          <Link
+            className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            href="/settings/general"
+          >
+            <SettingsIcon className="size-4" />
+            <span className="flex-1 text-left">Settings</span>
+          </Link>
         </div>
       ) : null}
     </aside>

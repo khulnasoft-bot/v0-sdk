@@ -49,4 +49,10 @@ export {
   Robot as AgentIcon,
   Star as StarIcon,
   StarFill as StarFillIcon,
+  SettingsSliders as GeneralSettingsIcon,
+  Database as MemoriesIcon,
+  Puzzle as IntegrationsIcon,
+  Users as MembersIcon,
+  ChartActivity as UsageIcon,
+  Key as ApiKeyIcon,
 } from 'geist-icons'
