@@ -15,7 +15,13 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "deploy:web": "vercel deploy --yes --project v0-clone-web",
+    "deploy:web:prod": "vercel deploy --prod --yes --project v0-clone-web",
+    "deploy:preview-proxy": "vercel deploy --yes --project v0-clone-preview",
+    "deploy:preview-proxy:prod": "vercel deploy --prod --yes --project v0-clone-preview",
+    "deploy": "bun run deploy:web && bun run deploy:preview-proxy",
+    "deploy:prod": "bun run deploy:web:prod && bun run deploy:preview-proxy:prod"
   },
   "devDependencies": {
     "oxfmt": "^0.55.0",
