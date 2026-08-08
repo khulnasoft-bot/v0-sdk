@@ -65,7 +65,7 @@ jobs:
         env:
           BUMP: patch
         run: |
-          cd packages/v0-sdk
+          cd packages/v0
           bun pm version "$BUMP" --no-git-tag-version
           SDK_NAME=$(bun pm pkg get name | tr -d '"')
           VERSION=$(bun pm pkg get version | tr -d '"')
@@ -120,7 +120,7 @@ jobs:
         if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
         run: |
           CANARY_VERSION="${{ steps.canary.outputs.version }}"
-          (cd packages/v0-sdk && bun pm pkg set "version=${CANARY_VERSION}")
+          (cd packages/v0 && bun pm pkg set "version=${CANARY_VERSION}")
           (cd packages/ai-tools && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
           (cd packages/react && bun pm pkg set "version=${CANARY_VERSION}" "dependencies.v0=${CANARY_VERSION}")
           (cd packages/create-v0-sdk-app && bun pm pkg set "version=${CANARY_VERSION}")
@@ -153,7 +153,7 @@ jobs:
             fi
           }
 
-          publish_if_needed "${{ steps.bump.outputs.sdk_name }}" packages/v0-sdk
+          publish_if_needed "${{ steps.bump.outputs.sdk_name }}" packages/v0
           publish_if_needed "${{ steps.bump.outputs.ai_tools_name }}" packages/ai-tools
           publish_if_needed "${{ steps.bump.outputs.react_name }}" packages/react
           publish_if_needed "${{ steps.bump.outputs.create_app_name }}" packages/create-v0-sdk-app
@@ -161,7 +161,7 @@ jobs:
         if: steps.changes.outputs.skip != 'true' && steps.published.outputs.skip != 'true'
         run: |
           VERSION="${{ steps.bump.outputs.version }}"
-          (cd packages/v0-sdk && bun pm pkg set "version=${VERSION}")
+          (cd packages/v0 && bun pm pkg set "version=${VERSION}")
           (cd packages/ai-tools && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
           (cd packages/react && bun pm pkg set "version=${VERSION}" "dependencies.v0=${VERSION}")
           (cd packages/create-v0-sdk-app && bun pm pkg set "version=${VERSION}")
@@ -185,7 +185,7 @@ jobs:
           branch-token: ${{ secrets.GITHUB_TOKEN }}
           sign-commits: true
           add-paths: |
-            packages/v0-sdk/package.json
+            packages/v0/package.json
             packages/ai-tools/package.json
             packages/react/package.json
             packages/create-v0-sdk-app/package.json
@@ -222,11 +222,11 @@ jobs:
       - name: Resolve shared latest version
         id: version
         run: |
-          SDK_NAME=$(cd packages/v0-sdk && bun pm pkg get name | tr -d '"')
+          SDK_NAME=$(cd packages/v0 && bun pm pkg get name | tr -d '"')
           AI_TOOLS_NAME=$(cd packages/ai-tools && bun pm pkg get name | tr -d '"')
           REACT_NAME=$(cd packages/react && bun pm pkg get name | tr -d '"')
           CREATE_APP_NAME=$(cd packages/create-v0-sdk-app && bun pm pkg get name | tr -d '"')
-          SDK_VERSION=$(cd packages/v0-sdk && bun pm pkg get version | tr -d '"')
+          SDK_VERSION=$(cd packages/v0 && bun pm pkg get version | tr -d '"')
           AI_TOOLS_VERSION=$(cd packages/ai-tools && bun pm pkg get version | tr -d '"')
           REACT_VERSION=$(cd packages/react && bun pm pkg get version | tr -d '"')
           CREATE_APP_VERSION=$(cd packages/create-v0-sdk-app && bun pm pkg get version | tr -d '"')
@@ -290,7 +290,7 @@ jobs:
             exit 1
           fi
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.sdk_skip != 'true'
-        run: npm publish --tag latest --workspace packages/v0-sdk
+        run: npm publish --tag latest --workspace packages/v0
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.ai_tools_skip != 'true'
         run: npm publish --tag latest --workspace packages/ai-tools
       - if: steps.version.outputs.prerelease != 'true' && steps.published.outputs.react_skip != 'true'

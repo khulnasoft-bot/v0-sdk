@@ -101,8 +101,8 @@ const paginationCursorPaths: Partial<Record<V0SdkOperationId, string>> = {
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../../..')
-const openApiPath = path.join(repoRoot, 'packages/v0-sdk/openapi.json')
-const transformersPath = path.join(repoRoot, 'packages/v0-sdk/src/generated/transformers.gen.ts')
+const openApiPath = path.join(repoRoot, 'packages/v0/openapi.json')
+const transformersPath = path.join(repoRoot, 'packages/v0/src/generated/transformers.gen.ts')
 const outputPath = path.join(repoRoot, 'packages/react/src/generated/swr.ts')
 
 async function main() {
@@ -117,7 +117,7 @@ async function main() {
   await mkdir(path.dirname(outputPath), { recursive: true })
   await writeFile(outputPath, render(operations))
   format(outputPath)
-  console.log(`Generated ${operations.length} SWR hooks from packages/v0-sdk/openapi.json`)
+  console.log(`Generated ${operations.length} SWR hooks from packages/v0/openapi.json`)
 }
 
 function collectOperations(spec: OpenApiDocument, availableTransformers: Set<string>): Operation[] {
@@ -222,7 +222,7 @@ function render(operations: Operation[]): string {
         .join('\n')}\n} from 'v0/browser'\n`
     : ''
 
-  return `// This file is generated from packages/v0-sdk/openapi.json. Do not edit.\n\n${transformerBlock}import type {\n${[
+  return `// This file is generated from packages/v0/openapi.json. Do not edit.\n\n${transformerBlock}import type {\n${[
     ...typeImports,
   ]
     .sort()

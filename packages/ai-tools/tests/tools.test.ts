@@ -10,7 +10,7 @@ type OpenApiDocument = {
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../..')
 const openApi = JSON.parse(
-  readFileSync(path.join(repoRoot, 'packages/v0-sdk/openapi.json'), 'utf8'),
+  readFileSync(path.join(repoRoot, 'packages/v0/openapi.json'), 'utf8'),
 ) as OpenApiDocument
 
 const httpMethods = new Set(['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'])

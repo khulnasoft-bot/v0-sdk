@@ -158,16 +158,15 @@ class SharedV0StreamResult implements V0StreamResult {
 
   toResponse(init: ResponseInit = {}): Response {
     const encoder = new TextEncoder()
-    const result = this
 
     const stream = new ReadableStream<Uint8Array>({
-      async start(controller) {
+      start: async (controller) => {
         try {
-          for await (const update of result.stream) {
+          for await (const update of this.stream) {
             controller.enqueue(encoder.encode(formatSse('update', update)))
           }
 
-          controller.enqueue(encoder.encode(formatSse('done', await result.final)))
+          controller.enqueue(encoder.encode(formatSse('done', await this.final)))
         } catch (error) {
           controller.enqueue(encoder.encode(formatSse('error', serializeError(error))))
         } finally {

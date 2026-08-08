@@ -120,6 +120,7 @@ export async function createApp({
 
       writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
     }
+    makeTurboConfigStandalone(appPath)
     removeLockfiles(appPath)
   }
 
@@ -185,6 +186,20 @@ function installAgentSkill(appPath: string): void {
 
   mkdirSync(dirname(destination), { recursive: true })
   copyFileSync(source, destination)
+}
+
+function makeTurboConfigStandalone(appPath: string): void {
+  const turboJsonPath = join(appPath, 'turbo.json')
+  if (!existsSync(turboJsonPath)) return
+
+  const turboJson = JSON.parse(readFileSync(turboJsonPath, 'utf8')) as {
+    extends?: unknown
+  }
+
+  if (!('extends' in turboJson)) return
+
+  delete turboJson.extends
+  writeFileSync(turboJsonPath, JSON.stringify(turboJson, null, 2) + '\n')
 }
 
 function removeLockfiles(appPath: string): void {

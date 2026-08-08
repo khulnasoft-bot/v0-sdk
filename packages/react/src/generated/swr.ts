@@ -1,4 +1,4 @@
-// This file is generated from packages/v0-sdk/openapi.json. Do not edit.
+// This file is generated from packages/v0/openapi.json. Do not edit.
 
 import {
   chatsCreateFromFilesResponseTransformer,
