@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process'
 export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 
 export function getPkgManager(): PackageManager {
-  const userAgent = process.env.npm_config_user_agent
+  const userAgent = process.env['npm_config_user_agent']
 
   if (userAgent) {
     if (userAgent.startsWith('yarn')) {

@@ -6,10 +6,10 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "dotenv -e .env.local -- turbo run dev",
-    "build": "dotenv -e .env.local -- turbo run build",
-    "start": "dotenv -e .env.local -- turbo run start",
-    "typecheck": "turbo run typecheck",
+    "dev": "dotenv -e .env.local -- turbo run dev --root-turbo-json turbo.base.json",
+    "build": "dotenv -e .env.local -- turbo run build --root-turbo-json turbo.base.json",
+    "start": "dotenv -e .env.local -- turbo run start --root-turbo-json turbo.base.json",
+    "typecheck": "turbo run typecheck --root-turbo-json turbo.base.json",
     "format": "oxfmt apps",
     "format:check": "oxfmt --check apps"
   },

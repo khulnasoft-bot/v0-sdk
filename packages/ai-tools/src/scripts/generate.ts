@@ -111,7 +111,7 @@ type OperationMetadata = {
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../../..')
-const openApiPath = path.join(repoRoot, 'packages/v0-sdk/openapi.json')
+const openApiPath = path.join(repoRoot, 'packages/v0/openapi.json')
 const outputPath = path.join(repoRoot, 'packages/ai-tools/src/generated/tools.ts')
 
 const httpMethods = new Set<HttpMethod>([

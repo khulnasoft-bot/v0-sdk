@@ -4,7 +4,7 @@ TypeScript SDK for the v0 API.
 
 This repository contains the v2 SDK package and compatible examples:
 
-- [`v0`](./packages/v0-sdk) - TypeScript SDK generated from the v0 API OpenAPI schema, with helpers for streaming responses and Vercel OIDC auth.
+- [`v0`](./packages/v0) - TypeScript SDK generated from the v0 API OpenAPI schema, with helpers for streaming responses and Vercel OIDC auth.
 - [`@v0-sdk/react`](./packages/react) - AI SDK transport and generated `/swr` hooks for browser clients that call an application-owned v0 proxy.
 - [`examples/basic`](./examples/basic) - Small TypeScript scripts for synchronous and streaming chat creation.
 - [`examples/react-chat`](./examples/react-chat) - Minimal Next.js chat using AI SDK `useChat` with `V0Transport`.
@@ -79,18 +79,19 @@ console.log(await result.final)
 
 ## Development
 
-This repo uses Bun workspaces.
+This repo uses [Bun workspaces](https://bun.sh/docs/install/workspaces) orchestrated with [Turborepo](https://turbo.build) (pinned via `packageManager` in `package.json`).
 
 ```bash
 bun install
 bun run generate
 bun run build
 bun run typecheck
+bun run test
 bun run lint
 bun run fmt:check
 ```
 
-The generated SDK is built from [`packages/v0-sdk/openapi.json`](./packages/v0-sdk/openapi.json) with [`@hey-api/openapi-ts`](https://heyapi.dev/openapi-ts/get-started).
+The generated SDK is built from [`packages/v0/openapi.json`](./packages/v0/openapi.json) with [`@hey-api/openapi-ts`](https://heyapi.dev/openapi-ts/get-started).
 
 ## License
 
