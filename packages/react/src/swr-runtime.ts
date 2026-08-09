@@ -1,9 +1,4 @@
-import useSWR, {
-  type Key,
-  type SWRConfiguration,
-  type SWRResponse,
-  useSWRConfig,
-} from 'swr'
+import useSWR, { type Key, type SWRConfiguration, type SWRResponse, useSWRConfig } from 'swr'
 import useSWRInfinite, {
   type SWRInfiniteConfiguration,
   type SWRInfiniteKeyLoader,
