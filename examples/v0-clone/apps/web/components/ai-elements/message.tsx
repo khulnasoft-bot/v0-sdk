@@ -196,11 +196,7 @@ export const MessageBranchSelector = ({
 
   return (
     <ButtonGroup
-      className={cn(
-        '[&>*:not(:first-child)]:rounded-l-md [&>*:not(:last-child)]:rounded-r-md',
-        className,
-      )}
-      data-from={from}
+      className="[&>*:not(:first-child)]:rounded-l-md [&>*:not(:last-child)]:rounded-r-md"
       orientation="horizontal"
       {...props}
     />
@@ -235,7 +231,6 @@ export const MessageBranchNext = ({ children, className, ...props }: MessageBran
   return (
     <Button
       aria-label="Next branch"
-      className={className}
       disabled={totalBranches <= 1}
       onClick={goToNext}
       size="icon-sm"

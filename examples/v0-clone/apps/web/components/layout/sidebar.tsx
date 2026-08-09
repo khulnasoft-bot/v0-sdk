@@ -10,7 +10,8 @@ import { ChatItem } from '@/components/layout/chat-item'
 import { ApiKeyDialog } from '@/components/layout/api-key-dialog'
 import type { getSidebarChats } from '@/lib/sidebar-chats'
 import { cn } from '@/lib/utils'
-import { ChevronDownIcon, ChevronRightIcon, SidebarToggleIcon } from '@/lib/icons'
+import Link from 'next/link'
+import { ChevronDownIcon, ChevronRightIcon, CodeIcon, EyeIcon, FileIcon, SearchIcon, SettingsIcon, SidebarToggleIcon, SparklesIcon, TerminalIcon } from '@/lib/icons'
 
 type SidebarProps = {
   open: boolean
@@ -215,6 +216,26 @@ function SidebarContent({ open, apiKeyStatus, onToggle, sidebarChats }: SidebarP
           >
             New Chat
           </button>
+
+          <nav aria-label="Workspace" className="mt-3 flex flex-col gap-0.5">
+            {[
+              ['/', 'Home', SparklesIcon],
+              ['/projects', 'Projects', FileIcon],
+              ['/chats', 'Chats', TerminalIcon],
+              ['/design-systems', 'Design Systems', CodeIcon],
+              ['/templates', 'Templates', EyeIcon],
+              ['/search', 'Search', SearchIcon],
+            ].map(([href, label, Icon]) => (
+              <Link className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" href={href as string} key={href as string}>
+                <Icon className="size-4" />
+                <span>{label as string}</span>
+              </Link>
+            ))}
+            <Link className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" href="/settings">
+              <SettingsIcon className="size-4" />
+              <span>Settings</span>
+            </Link>
+          </nav>
 
           {/* Favorites */}
           <Collapsible className="mt-4" onOpenChange={setFavoritesOpen} open={favoritesOpen}>

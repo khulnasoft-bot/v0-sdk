@@ -1,17 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "extends": ["//"],
+  "globalEnv": [
+    "V0_API_KEY",
+    "V0_CLONE_ORIGIN",
+    "V0_PREVIEW_PROXY_URL",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_RELATED_PROJECTS"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": [
-        "V0_API_KEY",
-        "V0_CLONE_ORIGIN",
-        "V0_PREVIEW_PROXY_URL",
-        "VERCEL",
-        "VERCEL_ENV",
-        "VERCEL_RELATED_PROJECTS"
-      ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "dev": {

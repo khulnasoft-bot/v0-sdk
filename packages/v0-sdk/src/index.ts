@@ -2,7 +2,7 @@ import { type ClientOptions, V0Sdk } from './generated'
 import { createClient, createConfig } from './generated/client'
 import { client as generatedClient } from './generated/client.gen'
 import type { Auth, AuthToken } from './generated/core/auth.gen'
-import { createV0StreamResult, V0StreamError, type V0StreamResult } from './stream/result'
+import { createV0StreamResult, type V0StreamResult } from './stream/result'
 import { vercelOidcAuth } from './vercel-oidc'
 
 export { fetchPreview } from './preview-proxy'
@@ -98,24 +98,6 @@ function getV0ApiKeyFromEnv(): string | undefined {
   return maybeProcess?.env?.V0_API_KEY
 }
 
-/**
- * Default options for streaming endpoints. The generated SSE client retries
- * forever (with backoff up to 30s) when a request fails — including HTTP
- * errors like 401/403/429/500 that can never succeed on retry. Bound the
- * retries and surface the failure as a {@link V0StreamError} so callers never
- * hang on a dead stream. Callers can override both values.
- */
-const streamDefaults = {
-  sseMaxRetryAttempts: 1,
-  onSseError(error: unknown) {
-    throw new V0StreamError(error instanceof Error ? error.message : String(error))
-  },
-}
-
-function withStreamDefaults<T>(options?: T) {
-  return { ...streamDefaults, ...options }
-}
-
 function wrapV0Client(raw: V0Sdk): V0Client {
   const chats = wrapChats(raw.chats)
   const messages = wrapMessages(raw.messages)
@@ -143,14 +125,14 @@ function wrapChats(chats: GeneratedChats): V0Client['chats'] {
           parameters: ChatsCreateStreamOptions,
           options?: ChatsCreateStreamRequestOptions,
         ) => {
-          const result = await target.createStream(parameters, withStreamDefaults(options))
+          const result = await target.createStream(parameters, options)
           return createV0StreamResult(result.stream)
         }
       }
 
       if (property === 'resume') {
         return async (parameters: ChatsResumeOptions, options?: ChatsResumeRequestOptions) => {
-          const result = await target.resume(parameters, withStreamDefaults(options))
+          const result = await target.resume(parameters, options)
           return createV0StreamResult(result.stream)
         }
       }
@@ -168,7 +150,7 @@ function wrapMessages(messages: GeneratedMessages): V0Client['messages'] {
           parameters: MessagesResolveStreamOptions,
           options?: MessagesResolveStreamRequestOptions,
         ) => {
-          const result = await target.resolveStream(parameters, withStreamDefaults(options))
+          const result = await target.resolveStream(parameters, options)
           return createV0StreamResult(result.stream)
         }
       }
@@ -178,7 +160,7 @@ function wrapMessages(messages: GeneratedMessages): V0Client['messages'] {
           parameters: MessagesSendStreamOptions,
           options?: MessagesSendStreamRequestOptions,
         ) => {
-          const result = await target.sendStream(parameters, withStreamDefaults(options))
+          const result = await target.sendStream(parameters, options)
           return createV0StreamResult(result.stream)
         }
       }

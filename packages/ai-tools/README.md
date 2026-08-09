@@ -2,7 +2,7 @@
 
 AI SDK tools for the v0 API.
 
-The tools are generated at build time from `packages/v0/openapi.json`, the
+The tools are generated at build time from `packages/v0-sdk/openapi.json`, the
 checked-in SDK copy of the v0 repo's `api/openapi-v2.json` spec. This is the
 same OpenAPI document used to generate the `v0` SDK. Every OpenAPI operation is
 exposed with a canonical key derived from its full `operationId`.

@@ -78,13 +78,13 @@ const program = new Command(packageJson.name)
 
 const opts = program.opts()
 
-const packageManager: PackageManager = opts['usePnpm']
+const packageManager: PackageManager = opts.usePnpm
   ? 'pnpm'
-  : opts['useNpm']
+  : opts.useNpm
     ? 'npm'
-    : opts['useYarn']
+    : opts.useYarn
       ? 'yarn'
-      : opts['useBun']
+      : opts.useBun
         ? 'bun'
         : getPkgManager()
 
@@ -144,7 +144,7 @@ async function run(): Promise<void> {
     process.exit(1)
   }
 
-  const example: ExampleType = opts['example'] || defaultExample
+  const example: ExampleType = opts.example || defaultExample
 
   if (!examples.some((ex) => ex.name === example)) {
     console.error(
@@ -159,7 +159,7 @@ async function run(): Promise<void> {
       appPath,
       packageManager,
       example,
-      skipInstall: opts['skipInstall'] || false,
+      skipInstall: opts.skipInstall || false,
     })
   } catch (reason) {
     console.error('Aborting installation.')

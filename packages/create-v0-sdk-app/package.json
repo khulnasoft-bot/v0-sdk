@@ -1,6 +1,6 @@
 {
   "name": "create-v0-sdk-app",
-  "version": "3.0.4",
+  "version": "3.0.3",
   "description": "Create apps using the v0 API and SDK with one command",
   "keywords": [
     "ai",
@@ -17,7 +17,7 @@
     "directory": "packages/create-v0-sdk-app"
   },
   "bin": {
-    "create-v0-sdk-app": "./dist/index.mjs"
+    "create-v0-sdk-app": "./dist/index.js"
   },
   "files": [
     "dist",
@@ -26,9 +26,10 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsdown",
-    "typecheck": "tsc",
-    "lint": "oxlint .",
+    "build": "bun run clean && tsc",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No linting configured for create-v0-sdk-app package'",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
@@ -44,7 +45,6 @@
     "@types/node": "^22.0.0",
     "@types/prompts": "^2.4.2",
     "@types/validate-npm-package-name": "^4.0.2",
-    "tsdown": "^0.21.4",
     "tsx": "^4.19.2",
     "typescript": "^6.0.3"
   },

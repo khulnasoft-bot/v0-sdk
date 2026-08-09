@@ -111,7 +111,7 @@ type OperationMetadata = {
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../../..')
-const openApiPath = path.join(repoRoot, 'packages/v0/openapi.json')
+const openApiPath = path.join(repoRoot, 'packages/v0-sdk/openapi.json')
 const outputPath = path.join(repoRoot, 'packages/ai-tools/src/generated/tools.ts')
 
 const httpMethods = new Set<HttpMethod>([
@@ -339,8 +339,8 @@ function mergeObjectSchemas(left: OpenApiSchema, right: OpenApiSchema | undefine
     ...left,
     ...right,
     properties: {
-      ...left.properties,
-      ...right.properties,
+      ...(left.properties ?? {}),
+      ...(right.properties ?? {}),
     },
     required: [...(left.required ?? []), ...(right.required ?? [])],
   }
@@ -351,7 +351,7 @@ function renderTools(operations: OperationMetadata[], spec: OpenApiDocument): st
   const schemaDeclarations = operations
     .map((operation) => renderInputSchemaDeclaration(spec, operation))
     .join('\n\n')
-  const flatEntries = operations.map((operation) => renderToolEntry(spec, operation)).join('\n')
+  const flatEntries = operations.map((operation) => renderToolEntry(operation)).join('\n')
   const categoryEntries = categories
     .map((category) => renderCategoryEntry(category, operations))
     .join('\n')
@@ -480,7 +480,7 @@ function applyOptionality(schemaExpression: string, required: boolean): string {
   return required ? schemaExpression : `${schemaExpression}.optional()`
 }
 
-function renderToolEntry(spec: OpenApiDocument, operation: OperationMetadata): string {
+function renderToolEntry(operation: OperationMetadata): string {
   const executeParameters = operationUsesInput(operation) ? 'input' : ''
   const executeDeclaration = operation.isStreaming
     ? `async function* (${executeParameters})`
@@ -490,12 +490,12 @@ function renderToolEntry(spec: OpenApiDocument, operation: OperationMetadata): s
       description: ${JSON.stringify(operation.description)},
       inputSchema: ${operation.key}InputSchema,
       execute: ${executeDeclaration} {
-${renderExecuteBody(spec, operation)}
+${renderExecuteBody(operation)}
       },
     }),`
 }
 
-function renderExecuteBody(spec: OpenApiDocument, operation: OperationMetadata): string {
+function renderExecuteBody(operation: OperationMetadata): string {
   const methodPath = ['client', ...operation.clientPath].join('.')
 
   if (!operationUsesInput(operation)) {
@@ -508,23 +508,23 @@ function renderExecuteBody(spec: OpenApiDocument, operation: OperationMetadata):
   }
 
   if (operation.isStreaming) {
-    return `${renderParametersSetup(spec, operation)}
+    return `${renderParametersSetup(operation)}
         const result = await ${methodPath}(parameters)
         yield* result.stream`
   }
 
-  return `${renderParametersSetup(spec, operation)}
+  return `${renderParametersSetup(operation)}
         return toToolResult(await ${methodPath}(parameters))`
 }
 
-function renderParametersSetup(spec: OpenApiDocument, operation: OperationMetadata): string {
+function renderParametersSetup(operation: OperationMetadata): string {
   if (operation.hasBody && !operation.bodyObjectFlattened) {
     if (operation.pathProperties.length === 0 && operation.queryProperties.length === 0) {
       return `        const parameters = input as Record<string, unknown>`
     }
 
     return `        const parameters = {
-${renderParameterEntries(spec, [...operation.pathProperties, ...operation.queryProperties])}
+${renderParameterEntries([...operation.pathProperties, ...operation.queryProperties])}
           body: input.body,
         }`
   }
@@ -536,34 +536,17 @@ ${renderParameterEntries(spec, [...operation.pathProperties, ...operation.queryP
   ]
 
   return `        const parameters = {
-${renderParameterEntries(spec, properties)}
+${renderParameterEntries(properties)}
         }`
 }
 
-function renderParameterEntries(
-  spec: OpenApiDocument,
-  properties: OperationInputProperty[],
-): string {
+function renderParameterEntries(properties: OperationInputProperty[]): string {
   return properties
     .map(
       (property) =>
-        `          ${quoteProperty(property.name)}: ${renderParameterValue(spec, property)},`,
+        `          ${quoteProperty(property.name)}: input.${accessProperty(property.name)},`,
     )
     .join('\n')
-}
-
-function renderParameterValue(spec: OpenApiDocument, property: OperationInputProperty): string {
-  const input = `input.${accessProperty(property.name)}`
-  const schema = resolveReference(spec, property.schema)
-  const type = Array.isArray(schema.type) ? schema.type[0] : schema.type
-
-  if (type === 'string' && schema.format === 'date-time') {
-    return property.required
-      ? `new Date(${input})`
-      : `${input} === undefined ? undefined : new Date(${input})`
-  }
-
-  return input
 }
 
 function renderCategoryEntry(category: string, operations: OperationMetadata[]): string {

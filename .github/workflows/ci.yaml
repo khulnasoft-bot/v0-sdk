@@ -21,7 +21,7 @@ jobs:
       - run: bun install
       - name: Check lockstep package versions
         run: |
-          SDK_VERSION=$(cd packages/v0 && bun pm pkg get version | tr -d '"')
+          SDK_VERSION=$(cd packages/v0-sdk && bun pm pkg get version | tr -d '"')
           AI_TOOLS_VERSION=$(cd packages/ai-tools && bun pm pkg get version | tr -d '"')
           REACT_VERSION=$(cd packages/react && bun pm pkg get version | tr -d '"')
           CREATE_APP_VERSION=$(cd packages/create-v0-sdk-app && bun pm pkg get version | tr -d '"')

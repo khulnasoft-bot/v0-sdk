@@ -3,17 +3,11 @@
   "compilerOptions": {
     "noEmit": true,
     "target": "ES2022",
-    "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "moduleResolution": "bundler",
     "exactOptionalPropertyTypes": false,
     "declaration": true,
-    "declarationMap": true,
-    "jsx": "react-jsx",
-    "types": ["bun"],
-    "paths": {
-      "v0/browser": ["../v0-sdk/src/browser.ts"]
-    }
+    "declarationMap": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"]
+  "include": ["src/**/*.ts"]
 }

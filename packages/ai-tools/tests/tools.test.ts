@@ -10,7 +10,7 @@ type OpenApiDocument = {
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(dirname, '../../..')
 const openApi = JSON.parse(
-  readFileSync(path.join(repoRoot, 'packages/v0/openapi.json'), 'utf8'),
+  readFileSync(path.join(repoRoot, 'packages/v0-sdk/openapi.json'), 'utf8'),
 ) as OpenApiDocument
 
 const httpMethods = new Set(['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'])
@@ -173,41 +173,6 @@ describe('generated v0 tools', () => {
       {
         chatId: 'chat_123',
         message: 'Build a dashboard',
-      },
-    ])
-  })
-
-  test('execute converts date-time inputs for the SDK', async () => {
-    const calls: unknown[] = []
-    currentClient = {
-      usage: {
-        getSummary: mock((options: unknown) => {
-          calls.push(options)
-          return { data: { object: 'usage_summary' } }
-        }),
-      },
-    }
-
-    const { v0Tools } = await import('../src')
-    const tools = v0Tools({ auth: 'test-key' })
-    const usageGetSummary = tools['usageGetSummary']
-    if (!usageGetSummary?.execute) {
-      throw new Error('usageGetSummary execute was not generated')
-    }
-
-    await usageGetSummary.execute(
-      {
-        start: '2026-08-01T00:00:00.000Z',
-        end: '2026-08-08T00:00:00.000Z',
-      },
-      { toolCallId: 'tool_call_123', messages: [] },
-    )
-
-    expect(calls).toEqual([
-      {
-        start: new Date('2026-08-01T00:00:00.000Z'),
-        end: new Date('2026-08-08T00:00:00.000Z'),
-        userId: undefined,
       },
     ])
   })

@@ -1,9 +1,18 @@
-import useSWR, { type Key, type SWRConfiguration, useSWRConfig } from 'swr'
+import useSWR, {
+  type Key,
+  type SWRConfiguration,
+  type SWRResponse,
+  useSWRConfig,
+} from 'swr'
 import useSWRInfinite, {
   type SWRInfiniteConfiguration,
   type SWRInfiniteKeyLoader,
+  type SWRInfiniteResponse,
 } from 'swr/infinite'
-import useSWRMutation, { type SWRMutationConfiguration } from 'swr/mutation'
+import useSWRMutation, {
+  type SWRMutationConfiguration,
+  type SWRMutationResponse,
+} from 'swr/mutation'
 
 import {
   requestV0Operation,
@@ -58,7 +67,7 @@ export function useV0Query<Data, ErrorBody, Input>(
   url: V0Url,
   input: Input,
   configuration: V0QueryConfiguration<Data, ErrorBody> = {},
-) {
+): SWRResponse<Data, V0ResponseError<ErrorBody>> {
   const { enabled, request, ...swrConfiguration } = configuration
   const key = url && enabled !== false ? createV0Key(operation.id, url, input) : null
 
@@ -73,7 +82,7 @@ export function useV0Mutation<Data, ErrorBody, Input>(
   operation: V0Operation<Data>,
   url: string,
   configuration: V0MutationConfiguration<Data, ErrorBody, Input> = {},
-) {
+): SWRMutationResponse<Data, V0ResponseError<ErrorBody>, Key, Input> {
   const { mutate } = useSWRConfig()
   const { request, ...swrConfiguration } = configuration
   const key = createV0Key(operation.id, url, null)
@@ -99,7 +108,7 @@ export function useV0CursorQuery<Page, ErrorBody, Input extends object>(
   input: Input | null,
   getCursor: (page: Page) => string | null | undefined,
   configuration: V0InfiniteConfiguration<Page, ErrorBody> = {},
-) {
+): SWRInfiniteResponse<Page, V0ResponseError<ErrorBody>> {
   const { enabled, request, ...swrConfiguration } = configuration
 
   const getKey: SWRInfiniteKeyLoader = (index, previousPage: Page | null) => {
