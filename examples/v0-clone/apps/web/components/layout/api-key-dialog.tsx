@@ -28,7 +28,7 @@ export function ApiKeyDialog({
 }) {
   const router = useRouter()
   const previewProxyOrigin = usePreviewProxyOrigin()
-  const [open, setOpen] = useState(!initialHasBrowserApiKey && !hasEnvironmentApiKey)
+  const [open, setOpen] = useState(false)
   const [hasBrowserApiKey, setHasBrowserApiKey] = useState(initialHasBrowserApiKey)
   const [apiKey, setApiKey] = useState('')
   const [error, setError] = useState<string | null>(null)
