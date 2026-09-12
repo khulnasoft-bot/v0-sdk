@@ -7,7 +7,8 @@
     "moduleResolution": "bundler",
     "exactOptionalPropertyTypes": false,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "types": ["bun"]
   },
   "include": ["src/**/*.ts"]
 }

@@ -75,7 +75,9 @@ function CodeEditor({
   const [files, setFiles] = useState(cachedFiles)
   const [savedFiles, setSavedFiles] = useState(cachedFiles)
   const [selectedPath, setSelectedPath] = useState(
-    cachedFiles.find((file: ChatFile) => file.encoding === 'utf8')?.path ?? cachedFiles[0]?.path ?? null,
+    cachedFiles.find((file: ChatFile) => file.encoding === 'utf8')?.path ??
+      cachedFiles[0]?.path ??
+      null,
   )
   const [splitPath, setSplitPath] = useState(selectedPath)
   const [showExplorer, setShowExplorer] = useState(true)
@@ -126,7 +128,9 @@ function CodeEditor({
 
   const updateFile = (path: string, content: string) => {
     setStatus(null)
-    setFiles((current: ChatFile[]) => current.map((file: ChatFile) => (file.path === path ? { ...file, content } : file)))
+    setFiles((current: ChatFile[]) =>
+      current.map((file: ChatFile) => (file.path === path ? { ...file, content } : file)),
+    )
   }
 
   async function save() {
@@ -138,7 +142,10 @@ function CodeEditor({
     setStatus(null)
     try {
       await updateFiles.trigger({
-        files: changedFiles.map(({ path, content }: { path: string; content: string }) => ({ path, content })),
+        files: changedFiles.map(({ path, content }: { path: string; content: string }) => ({
+          path,
+          content,
+        })),
       })
       setSavedFiles(files)
       setStatus('Saved')
@@ -176,7 +183,11 @@ function CodeEditor({
   }
 
   const rename = () => {
-    if (!renamePath || !newPath.trim() || files.some((file: ChatFile) => file.path === newPath.trim())) {
+    if (
+      !renamePath ||
+      !newPath.trim() ||
+      files.some((file: ChatFile) => file.path === newPath.trim())
+    ) {
       setStatus('A unique file path is required')
       return
     }
@@ -220,7 +231,8 @@ function CodeEditor({
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 text-[11px] text-muted-foreground">
             <span>{file.path}</span>
-            {file.content !== savedFiles.find((item: ChatFile) => item.path === file.path)?.content ? (
+            {file.content !==
+            savedFiles.find((item: ChatFile) => item.path === file.path)?.content ? (
               <span className="text-foreground">• unsaved</span>
             ) : null}
           </div>
@@ -461,7 +473,7 @@ function CodeEditor({
                   onChange={(event) => setSplitPath(event.target.value)}
                   value={splitPath ?? ''}
                 >
-{files.map((file: ChatFile) => (
+                  {files.map((file: ChatFile) => (
                     <option key={file.path} value={file.path}>
                       {file.path}
                     </option>
