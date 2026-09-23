@@ -77,8 +77,12 @@ jobs:
           commit-message: 'chore: update SDK from production OpenAPI'
           title: 'chore: update SDK from production OpenAPI'
           reviewers: |
-            alex-grover
-            rickeyswuave
+            khulnasoft-bot
+            khulnasoft
+            xeondesk-9906
+            xeondesk
+            x0
+            envrs
           body: |
             Fetches the latest OpenAPI document from the production API and regenerates the TypeScript SDK, AI tools, and React hooks.
 

@@ -229,7 +229,7 @@ function render(operations: Operation[]): string {
     .map((name) => `  ${name},`)
     .join(
       '\n',
-    )}\n} from 'v0/browser'\n\nimport type { V0Operation } from '../request'\nimport { useV0CursorQuery, useV0Mutation, useV0Query } from '../swr-runtime'\nimport type {\n  V0InfiniteConfiguration,\n  V0MutationConfiguration,\n  V0QueryConfiguration,\n  V0Url,\n} from '../swr-runtime'\n\nexport const V0_REACT_OPERATION_HOOKS = {\n${operationMap}\n} as const\n\n${operations.map(renderOperation).join('\n')}`
+    )}\n} from 'v0/browser'\n\nimport type { V0Operation, V0ResponseError } from '../request'\nimport type { Key, SWRResponse } from 'swr'\nimport type { SWRInfiniteResponse } from 'swr/infinite'\nimport type { SWRMutationResponse } from 'swr/mutation'\nimport { useV0CursorQuery, useV0Mutation, useV0Query } from '../swr-runtime'\nimport type {\n  V0InfiniteConfiguration,\n  V0MutationConfiguration,\n  V0QueryConfiguration,\n  V0Url,\n} from '../swr-runtime'\n\nexport const V0_REACT_OPERATION_HOOKS = {\n${operationMap}\n} as const\n\n${operations.map(renderOperation).join('\n')}`
 }
 
 function renderOperation(operation: Operation): string {
@@ -261,12 +261,12 @@ function renderQuery(operation: Operation): string {
     : ''
   const queryName = operation.queryParameters.length ? 'params' : 'undefined'
 
-  return `${renderOperationDefinition(operation)}\n\nexport function ${publicName}(\n  url: V0Url,\n${paramsLine}  configuration: V0QueryConfiguration<${responseType}, ${errorType}> = {},\n) {\n  return useV0Query<${responseType}, ${errorType}, ${queryType}>(\n    ${getOperationName(operation)},\n    url,\n    ${queryName},\n    configuration,\n  )\n}\n`
+  return `${renderOperationDefinition(operation)}\n\nexport function ${publicName}(\n  url: V0Url,\n${paramsLine}  configuration: V0QueryConfiguration<${responseType}, ${errorType}> = {},\n): SWRResponse<${responseType}, V0ResponseError<${errorType}>> {\n  return useV0Query<${responseType}, ${errorType}, ${queryType}>(\n    ${getOperationName(operation)},\n    url,\n    ${queryName},\n    configuration,\n  )\n}\n`
 }
 
 function renderInfinite(operation: Operation): string {
   const { typePrefix } = operation
-  const publicName = `${operation.publicName}Infinite`
+  const publicNameInfinite = `${operation.publicName}Infinite`
   const responseType = `${typePrefix}Response`
   const errorType = `${typePrefix}Error`
   const queryType = `Omit<NonNullable<${typePrefix}Data['query']>, 'cursor'>`
@@ -276,7 +276,7 @@ function renderInfinite(operation: Operation): string {
   const paramsLine = `  params${requiredQuery ? '' : '?'}: ${queryType},`
   const input = requiredQuery ? 'params' : 'params ?? {}'
 
-  return `export function ${publicName}(\n  url: V0Url,\n${paramsLine}\n  configuration: V0InfiniteConfiguration<${responseType}, ${errorType}> = {},\n) {\n  return useV0CursorQuery(\n    ${getOperationName(operation)},\n    url,\n    ${input},\n    (page) => page.${operation.cursorPath ?? 'cursor'},\n    configuration,\n  )\n}\n`
+  return `export function ${publicNameInfinite}(\n  url: V0Url,\n${paramsLine}\n  configuration: V0InfiniteConfiguration<${responseType}, ${errorType}> = {},\n): SWRInfiniteResponse<${responseType}, V0ResponseError<${errorType}>> {\n  return useV0CursorQuery(\n    ${getOperationName(operation)},\n    url,\n    ${input},\n    (page) => page.${operation.cursorPath ?? 'cursor'},\n    configuration,\n  )\n}\n`
 }
 
 function renderMutation(operation: Operation): string {
@@ -286,7 +286,7 @@ function renderMutation(operation: Operation): string {
   const inputType = operation.hasBody ? `${typePrefix}Data['body']` : 'never'
   const inputAlias = `${publicName.slice(3)}Input`
 
-  return `${renderOperationDefinition(operation)}\n\n${operation.hasBody ? `export type ${inputAlias} = ${inputType}\n` : ''}export function ${publicName}(\n  url: string,\n  configuration: V0MutationConfiguration<${responseType}, ${errorType}, ${inputType}> = {},\n) {\n  return useV0Mutation(${getOperationName(operation)}, url, configuration)\n}\n`
+  return `${renderOperationDefinition(operation)}\n\n${operation.hasBody ? `export type ${inputAlias} = ${inputType}\n` : ''}export function ${publicName}(\n  url: string,\n  configuration: V0MutationConfiguration<${responseType}, ${errorType}, ${inputType}> = {},\n): SWRMutationResponse<${responseType}, V0ResponseError<${errorType}>, Key, ${inputType}> {\n  return useV0Mutation(${getOperationName(operation)}, url, configuration)\n}\n`
 }
 
 function getResponseType(operation: Operation): string {

@@ -4,7 +4,10 @@ import { toV0JsonResponse } from '@/lib/v0-response'
 import { authorizeProxyRequest } from '@/lib/proxy'
 import { v0 } from '@/lib/v0-client'
 
-type CreateChatBody = Pick<ChatsCreateStreamData['body'], 'message' | 'modelConfiguration'>
+type CreateChatBody = Pick<
+  ChatsCreateStreamData['body'],
+  'message' | 'modelConfiguration' | 'attachments'
+>
 
 export async function GET(request: Request) {
   const denied = authorizeProxyRequest(request)
@@ -43,6 +46,7 @@ export async function POST(request: Request) {
   const result = await v0.chats.createStream({
     message: body.message.trim(),
     modelConfiguration: body.modelConfiguration,
+    attachments: body.attachments,
     privacy: 'private',
   })
 

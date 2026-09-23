@@ -74,7 +74,7 @@ export async function createApp({
   console.log(`Creating a new v0 SDK app in ${green(appPath)}.`)
   console.log()
 
-  const template = `vercel/v0-sdk/examples/${templateDirectories[example]}#v${packageJson.version}`
+  const template = `khulnasoft-bot/v0-sdk/examples/${templateDirectories[example]}#v${packageJson.version}`
 
   console.log(`Downloading template ${cyan(template)}. This might take a moment.`)
   console.log()

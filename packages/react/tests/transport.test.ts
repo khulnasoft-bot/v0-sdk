@@ -230,4 +230,38 @@ describe('V0Transport', () => {
     await stream!.cancel('stop reading')
     expect(requestSignal?.aborted).toBe(true)
   })
+
+  test('merges inline { name, content } attachments with file-part { url } attachments', async () => {
+    const fileMessage = toV0UIMessage(
+      message({
+        id: 'user_file',
+        role: 'user',
+        attachments: [
+          { url: 'https://example.com/a.png', name: 'a.png', contentType: 'image/png' },
+        ],
+      }),
+    )
+    const calls: Array<{ url: string; body: unknown }> = []
+    const transport = new V0Transport({
+      urls,
+      request: {
+        fetch: async (input) => {
+          const request = input instanceof Request ? input : new Request(input)
+          calls.push({ url: request.url, body: await request.clone().json() })
+          return v0SseResponse([], {
+            ...streamSnapshots(message({ id: 'assistant_1', role: 'assistant' })).final,
+          })
+        },
+      },
+    })
+
+    await transport.sendMessages({
+      ...sendOptions([fileMessage]),
+      body: { attachments: [{ name: 'inline.txt', content: 'hello world' }] },
+    })
+
+    const attachments = (calls[0]?.body as { attachments?: unknown[] })?.attachments
+    expect(attachments).toContainEqual({ url: 'https://example.com/a.png' })
+    expect(attachments).toContainEqual({ name: 'inline.txt', content: 'hello world' })
+  })
 })

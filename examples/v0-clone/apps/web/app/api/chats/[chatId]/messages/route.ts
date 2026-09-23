@@ -3,7 +3,10 @@ import { toV0JsonResponse } from '@/lib/v0-response'
 import { authorizeProxyRequest } from '@/lib/proxy'
 import { v0 } from '@/lib/v0-client'
 
-type SendMessageBody = Pick<MessagesSendData['body'], 'message' | 'modelConfiguration'>
+type SendMessageBody = Pick<
+  MessagesSendData['body'],
+  'message' | 'modelConfiguration' | 'attachments'
+>
 
 export async function GET(request: Request, { params }: { params: Promise<{ chatId: string }> }) {
   const denied = authorizeProxyRequest(request)
@@ -39,6 +42,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ cha
     chatId,
     message: body.message.trim(),
     modelConfiguration: body.modelConfiguration,
+    attachments: body.attachments,
   })
 
   return result.toResponse()

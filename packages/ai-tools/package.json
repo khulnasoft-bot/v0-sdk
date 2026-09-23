@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vercel/v0-sdk.git",
+    "url": "git+https://github.com/khulnasoft-bot/v0-sdk.git",
     "directory": "packages/ai-tools"
   },
   "files": [
@@ -50,5 +50,8 @@
   },
   "peerDependencies": {
     "ai": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

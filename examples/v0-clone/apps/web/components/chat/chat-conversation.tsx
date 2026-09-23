@@ -1,6 +1,7 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
+import type { FileUIPart } from 'ai'
 import {
   shouldResumeV0Chat,
   toV0UIMessage,
@@ -10,12 +11,14 @@ import {
   type V0UIMessage,
 } from '@v0-sdk/react'
 import { useMessages, useResolveTask, useRestoreMessage, useStopMessage } from '@v0-sdk/react/swr'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { readV0Stream } from 'v0/browser'
 import { ConversationView } from '@/components/chat/conversation-view'
 import { PromptBox } from '@/components/prompt-box'
 import type { ResolveTask } from '@/components/chat/task-resolution'
 import { useSettings } from '@/lib/hooks/useSettings'
+import { usePromptQueue } from '@/lib/hooks/usePromptQueue'
+import { CheckCircleIcon, TrashIcon } from '@/lib/icons'
 
 export function ChatConversation({
   chatId,
@@ -87,6 +90,8 @@ export function ChatConversation({
     },
   })
 
+  const { queue, enqueue, remove: removeQueued, clear: clearQueue } = usePromptQueue()
+
   const chatIsBusy = status === 'submitted' || status === 'streaming'
   const activeAssistantMessage = resolvingMessageId
     ? uiMessages.find((message) => message.id === resolvingMessageId)
@@ -111,22 +116,44 @@ export function ChatConversation({
     }
   }
 
-  const submitMessage = async (message: string) => {
+  const performSend = useCallback(
+    async (text: string, files: FileUIPart[] = []) => {
+      await sendMessage(
+        { text, files },
+        {
+          body: {
+            modelConfiguration: {
+              modelId: settings.model,
+              imageGenerations: false,
+            },
+          },
+        },
+      )
+    },
+    [sendMessage, settings.model],
+  )
+
+  const submitMessage = async (text: string, files: FileUIPart[] = []) => {
     setActionError(null)
     clearError()
 
-    await sendMessage(
-      { text: message },
-      {
-        body: {
-          modelConfiguration: {
-            modelId: settings.model,
-            imageGenerations: false,
-          },
-        },
-      },
-    )
+    if (chatIsBusy || isResolving || restoringMessageId) {
+      enqueue(text, files)
+      return
+    }
+
+    await performSend(text, files)
   }
+
+  useEffect(() => {
+    if (chatIsBusy || isResolving || restoringMessageId || queue.length === 0) return
+
+    const next = queue[0]
+    if (!next) return
+    removeQueued(next.id)
+    void performSend(next.text, next.files)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatIsBusy, isResolving, restoringMessageId, queue, removeQueued, performSend])
 
   const restoreMessage = async (messageId: string) => {
     setActionError(null)
@@ -215,6 +242,46 @@ export function ChatConversation({
         vercelProjectId={vercelProjectId}
       />
       <div className="shrink-0 px-3 pb-3">
+        {queue.length > 0 && (
+          <div className="mb-2 rounded-lg border border-border bg-card p-2">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <CheckCircleIcon className="size-3.5" />
+                Queued ({queue.length})
+              </span>
+              <button
+                type="button"
+                className="text-xs text-muted-foreground hover:text-destructive"
+                onClick={clearQueue}
+              >
+                Clear
+              </button>
+            </div>
+            <ul className="mt-1.5 space-y-1">
+              {queue.map((item, i) => (
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between rounded px-2 py-1 text-xs"
+                >
+                  <span className="truncate text-muted-foreground">
+                    {i + 1}. {item.text.slice(0, 60) || item.text || '(no text)'}
+                    {item.files.length > 0
+                      ? ` (+${item.files.length} file${item.files.length > 1 ? 's' : ''})`
+                      : ''}
+                  </span>
+                  <button
+                    type="button"
+                    className="shrink-0 text-muted-foreground hover:text-destructive"
+                    aria-label={`Remove queued prompt ${i + 1}`}
+                    onClick={() => removeQueued(item.id)}
+                  >
+                    <TrashIcon className="size-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <PromptBox
           compact
           isSubmitting={isSubmitting || restoringMessageId !== null}

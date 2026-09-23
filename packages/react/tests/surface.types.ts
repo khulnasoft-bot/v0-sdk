@@ -5,7 +5,7 @@ import type { ChatsGetResponse } from '../src'
 import { useChat, useDownloadChatFiles, useMessages, useSendMessage } from '../src/swr'
 
 export function verifyPublicTypes() {
-  // @ts-expect-error SWR hooks are only exported from the /swr entrypoint.
+// @ts-expect-error SWR hooks are only exported from the /swr entrypoint.
   void V0React.useChat
 
   const chat: SWRResponse<ChatsGetResponse> = useChat('/api/v0/chats/chat_1')
